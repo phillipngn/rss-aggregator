@@ -31,13 +31,30 @@ func (cfg *apiConfig) handlersCreateFeed(w http.ResponseWriter, r *http.Request,
 		Url:       params.Url,
 		UserID:    user.ID,
 	})
-
 	if err != nil {
-		responseWithError(w, http.StatusBadRequest, "Could not create user")
+		responseWithError(w, http.StatusBadRequest, "Could not create feed")
 		return
 	}
 
-	responseWithJson(w, http.StatusOK, parseFeed(feed))
+	feedFollow, err := cfg.DB.CreateFeedFollow(r.Context(), database.CreateFeedFollowParams{
+		ID:        uuid.New(),
+		FeedID:    feed.ID,
+		UserID:    user.ID,
+		CreatedAt: time.Now().UTC(),
+		UpdatedAt: time.Now().UTC(),
+	})
+	if err != nil {
+		responseWithError(w, http.StatusBadRequest, "Could not create feed follow")
+		return
+	}
+
+	responseWithJson(w, http.StatusOK, struct {
+		feed       FeedVM
+		feedFollow FeedFollowVM
+	}{
+		feed:       parseFeed(feed),
+		feedFollow: parseFeedFollow(feedFollow),
+	})
 }
 
 func (cfg *apiConfig) handlerGetFeeds(w http.ResponseWriter, r *http.Request) {

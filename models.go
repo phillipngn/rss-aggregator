@@ -24,6 +24,14 @@ type FeedVM struct {
 	UserID    uuid.UUID `json:"user_id"`
 }
 
+type FeedFollowVM struct {
+	ID        uuid.UUID `json:"id"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
+	FeedID    uuid.UUID `json:"feed_id"`
+	UserID    uuid.UUID `json:"user_id"`
+}
+
 func parseUser(dbUser database.User) UserVM {
 	return UserVM{
 		ID:        dbUser.ID,
@@ -49,6 +57,24 @@ func parseFeeds(dbFeeds []database.Feed) []FeedVM {
 	result := make([]FeedVM, len(dbFeeds))
 	for i, feed := range dbFeeds {
 		result[i] = parseFeed(feed)
+	}
+	return result
+}
+
+func parseFeedFollow(feedFollow database.FeedFollow) FeedFollowVM {
+	return FeedFollowVM{
+		ID:        feedFollow.ID,
+		CreatedAt: feedFollow.CreatedAt,
+		UpdatedAt: feedFollow.UpdatedAt,
+		FeedID:    feedFollow.FeedID,
+		UserID:    feedFollow.UserID,
+	}
+}
+
+func parseFeedFollows(feedFollows []database.FeedFollow) []FeedFollowVM {
+	result := make([]FeedFollowVM, len(feedFollows))
+	for i, feedFollow := range feedFollows {
+		result[i] = parseFeedFollow(feedFollow)
 	}
 	return result
 }
