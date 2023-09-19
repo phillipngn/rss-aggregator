@@ -44,3 +44,11 @@ func parseFeed(dbFeed database.Feed) FeedVM {
 		UserID:    dbFeed.UserID,
 	}
 }
+
+func parseFeeds(dbFeeds []database.Feed) []FeedVM {
+	result := make([]FeedVM, len(dbFeeds))
+	for i, feed := range dbFeeds {
+		result[i] = parseFeed(feed)
+	}
+	return result
+}
