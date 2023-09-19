@@ -31,6 +31,7 @@ func main() {
 	}
 
 	conn, connErr := sql.Open("postgres", dbUrl)
+
 	if connErr != nil {
 		log.Fatal("Can not connect postgres database")
 	}
@@ -56,10 +57,9 @@ func main() {
 	}))
 
 	v1Router := chi.NewRouter()
-	v1Router.Get("/healthz", handleReadiness)
-	v1Router.Get("/error", handleError)
 	v1Router.Post("/users", apiCfg.handlerCreateUser)
-	v1Router.Get("/users", apiCfg.handlerGetUser)
+	v1Router.Get("/users", apiCfg.middlewareAuth(apiCfg.handlerGetUser))
+	v1Router.Post("/feeds", apiCfg.middlewareAuth(apiCfg.handlersCreateFeed))
 
 	router.Mount("/v1", v1Router)
 
